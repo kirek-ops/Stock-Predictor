@@ -55,7 +55,7 @@ model.fit(x_train, y_train, epochs = 25, batch_size = 32)
 
 # Load data
 test_start = datetime(2020, 1, 1)
-test_end = datetime(2022, 1, 1)
+test_end = datetime.now()
 
 test_data = pdr.get_data_yahoo(company, test_start, test_end)
 actual_prices = test_data['Close'].values
@@ -86,3 +86,12 @@ plt.xlabel('Time')
 plt.ylabel(f"{company} share price")
 plt.legend()
 plt.show()
+
+# Predict next day
+real_data = [model_inputs[len(model_inputs) + 1 - prediction_days:len(model_inputs + 1), 0]]
+real_data = np.array(real_data)
+real_data = np.reshape(real_data, (real_data.shape[0], real_data.shape[1], 1))
+
+prediction = model.predict(real_data)
+prediction = scaler.inverse_transform(prediction)
+print(f"Prediction: {prediction}")
