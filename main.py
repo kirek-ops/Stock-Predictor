@@ -47,7 +47,7 @@ model.add(Dropout(0.2))
 #Prediction of the next closest value 
 model.add(Dense(units = 1)) 
 
-model.compile(optimizer = 'adam', loss = 'mean_squeared_error')
+model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 model.fit(x_train, y_train, epochs = 25, batch_size = 32)
 
 
@@ -58,7 +58,7 @@ test_start = datetime(2020, 1, 1)
 test_end = datetime(2022, 1, 1)
 
 test_data = pdr.get_data_yahoo(company, test_start, test_end)
-actual_values = test_data['Close'].values
+actual_prices = test_data['Close'].values
  
 total_dataset = pd.concat((data['Close'], test_data['Close']), axis = 0)
 
@@ -75,3 +75,14 @@ for x in range(prediction_days, len(model_inputs)):
 x_test = np.array(x_test)
 x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
+predicted_prices = model.predict(x_test)
+predicted_prices = scaler.inverse_transform(predicted_prices)
+
+# Plot the test predictions 
+plt.plot(actual_prices, color = "black", label = f"Actual {company} price")
+plt.plot(predicted_prices, color = "green", label = f"Predicted {company} price")
+plt.title(f"{company} share price")
+plt.xlabel('Time')
+plt.ylabel(f"{company} share price")
+plt.legend()
+plt.show()
